@@ -91,32 +91,10 @@ async function scrape(platform, record) {
 
                 }
                 followers = await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[5]/div[2]/a/span[1]/span'))
-                await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div[2]/div/a/div[4]/div')).click()
+                await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div[2]/div/a/div[4]')).click()
                 pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
                 break
         }
-        // if (platform === 'TikTok') {
-        //     followers = await driver.findElement(By.css('strong[title= "Followers"]'))
-        //     pic = await driver.findElement(By.xpath('//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img'))
-        // } else if (platform === 'Instagram') {
-        //     let tmpFollowers = await driver.findElement(By.xpath("//div[text()= ' followers']"))
-        //     let tmpPfp = await driver.findElement(By.css("span[role='link']"))
-        //     followers = await tmpFollowers.findElement(By.tagName('span'))
-        //     pic = await tmpPfp.findElement(By.tagName(`img`))
-        // } else if (platform === 'YouTube') {
-        //     let tmpPfp = await driver.findElement(By.id('channel-header-container'))
-        //     followers = await driver.findElement(By.id('subscriber-count'))
-        //     pic = await tmpPfp.findElement(By.tagName('img'))
-        // } else if (platform === 'Twitter') {
-        //     try {
-        //         await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div[2]/div/div[3]')).click()
-        //     } catch (e) {
-        //
-        //     }
-        //     followers = await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[5]/div[2]/a/span[1]/span'))
-        //     await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div[2]/div/a/div[4]/div')).click()
-        //     pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
-        // }
         results['Followers'] = await followers.getText()
         results['Followers'] = results['Followers'].replace("subscribers", '')
         results['Social_Media_Profile_Picture'] = await pic.getAttribute('src')
