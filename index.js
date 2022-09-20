@@ -42,8 +42,7 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
     // }
     try {
         const instagramData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "YouTube"',
-            maxRecords: 3
+            filterByFormula: '{Platform} = "YouTube"'
         }).all()
         await updateAirtableTikTok('YouTube', instagramData)
     } catch (e) {
@@ -108,12 +107,14 @@ async function updateAirtableTikTok(platform, data) {
     console.log('-----------------------------------------')
     console.log(`Creators with inactive ${platform} profile: ${error.length}`)
     error.forEach(record => console.log(record.fields.Name))
-    await addInactiveToList("Saved_Lists", {
-        "fields": {
-            List_Name: `Inactive ${platform} Accounts`,
-            Creators: error.map(record => record.fields.Creator_Record_id[0])
-        }
-    })
+    if (error.length > 0) {
+        await addInactiveToList("Saved_Lists", {
+            "fields": {
+                List_Name: `Inactive ${platform} Accounts`,
+                Creators: error.map(record => record.fields.Creator_Record_id[0])
+            }
+        })
+    }
     console.log('-----------------------------------------')
     const updatedRows = await airtableUpdate('Social_Profiles', updatedRecords)
     console.log(`Total number of updated rows on airtable: ${updatedRows}`)
