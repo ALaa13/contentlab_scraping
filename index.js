@@ -32,15 +32,15 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
     // } catch (e) {
     //     console.log(e.name)
     // }
-    try {
-        const instagramData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "Instagram"',
-            maxRecords: 1
-        }).all()
-        await updateAirtableTikTok('Instagram', instagramData)
-    } catch (e) {
-        console.log(e)
-    }
+    // try {
+    //     const instagramData = await base('Social_Profiles').select({
+    //         filterByFormula: '{Platform} = "Instagram"',
+    //         maxRecords: 1
+    //     }).all()
+    //     await updateAirtableTikTok('Instagram', instagramData)
+    // } catch (e) {
+    //     console.log(e)
+    // }
     // try {
     //     const youtubeData = await base('Social_Profiles').select({
     //         filterByFormula: '{Platform} = "YouTube"'
@@ -49,20 +49,20 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
     // } catch (e) {
     //     console.log(e)
     // }
-    // try {
-    //     const twitterData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "Twitter"'
-    //     }).all()
-    //     await updateAirtableTikTok('Twitter', twitterData)
-    // } catch (e) {
-    //     console.log(e)
-    // }
+    try {
+        const twitterData = await base('Social_Profiles').select({
+            filterByFormula: '{Platform} = "Twitter"'
+        }).all()
+        await updateAirtableTikTok('Twitter', twitterData)
+    } catch (e) {
+        console.log(e)
+    }
 })();
 
 async function scrape(platform, record) {
     let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH)
     const driver = new Builder().forBrowser('chrome').setChromeOptions(options).setChromeService(serviceBuilder).build()
-    await driver.manage().setTimeouts({implicit: 5000});
+    await driver.manage().setTimeouts({implicit: 3000});
     const results = {}
     try {
         let followers, pic
@@ -78,11 +78,6 @@ async function scrape(platform, record) {
                 let tmpPfpInstagram = await driver.findElement(By.css("span[role='link']"))
                 followers = await tmpFollowersInstagram.findElement(By.tagName('span'))
                 pic = await tmpPfpInstagram.findElement(By.tagName(`img`))
-                driver.takeScreenshot().then(
-                    function (image) {
-                        require('fs').writeFileSync('img.png', image, 'base64')
-                    }
-                )
                 break
             case 'YouTube':
                 let tmpPfpYoutube = await driver.findElement(By.id('channel-header-container'))
@@ -127,7 +122,6 @@ async function scrape(platform, record) {
         results['Social_Media_Profile_Picture'] = await pic.getAttribute('src')
         return results
     } catch (e) {
-        console.log(e)
         results['error'] = 'error'
         return results
     } finally {
