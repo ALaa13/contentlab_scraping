@@ -1,4 +1,4 @@
-const {Builder, By, until} = require('selenium-webdriver')
+const {Builder, By} = require('selenium-webdriver')
 const chrome = require("selenium-webdriver/chrome")
 const Airtable = require('airtable')
 
@@ -24,31 +24,22 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
 
 // Main function
 (async () => {
-    // try {
-    //     const tikTokData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "TikTok"'
-    //     }).all()
-    //     await updateAirtableTikTok('TikTok', tikTokData)
-    // } catch (e) {
-    //     console.log(e.name)
-    // }
-    // try {
-    //     const instagramData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "Instagram"',
-    //         maxRecords: 1
-    //     }).all()
-    //     await updateAirtableTikTok('Instagram', instagramData)
-    // } catch (e) {
-    //     console.log(e)
-    // }
-    // try {
-    //     const youtubeData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "YouTube"'
-    //     }).all()
-    //     await updateAirtableTikTok('YouTube', youtubeData)
-    // } catch (e) {
-    //     console.log(e)
-    // }
+    try {
+        const tikTokData = await base('Social_Profiles').select({
+            filterByFormula: '{Platform} = "TikTok"'
+        }).all()
+        await updateAirtableTikTok('TikTok', tikTokData)
+    } catch (e) {
+        console.log(e.name)
+    }
+    try {
+        const youtubeData = await base('Social_Profiles').select({
+            filterByFormula: '{Platform} = "YouTube"'
+        }).all()
+        await updateAirtableTikTok('YouTube', youtubeData)
+    } catch (e) {
+        console.log(e)
+    }
     try {
         const twitterData = await base('Social_Profiles').select({
             filterByFormula: '{Platform} = "Twitter"'
@@ -72,12 +63,6 @@ async function scrape(platform, record) {
             case 'TikTok':
                 followers = await driver.findElement(By.css('strong[title= "Followers"]'))
                 pic = await driver.findElement(By.xpath('//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img'))
-                break
-            case 'Instagram':
-                let tmpFollowersInstagram = await driver.findElement(By.xpath("//div[text()= ' followers']"))
-                let tmpPfpInstagram = await driver.findElement(By.css("span[role='link']"))
-                followers = await tmpFollowersInstagram.findElement(By.tagName('span'))
-                pic = await tmpPfpInstagram.findElement(By.tagName(`img`))
                 break
             case 'YouTube':
                 let tmpPfpYoutube = await driver.findElement(By.id('channel-header-container'))
