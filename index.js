@@ -34,8 +34,7 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
     // }
     try {
         const instagramData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "Instagram"',
-            maxRecord: 10
+            filterByFormula: '{Platform} = "Instagram"'
         }).all()
         await updateAirtableTikTok('Instagram', instagramData)
     } catch (e) {
@@ -78,6 +77,7 @@ async function scrape(platform, record) {
         results['Social_Media_Profile_Picture'] = await pic.getAttribute('src')
         return results
     } catch (e) {
+        console.log(e)
         results['error'] = 'error'
         return results
     } finally {
