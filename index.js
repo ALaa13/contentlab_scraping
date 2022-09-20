@@ -32,31 +32,31 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
     // } catch (e) {
     //     console.log(e.name)
     // }
-    // try {
-    //     const instagramData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "Instagram"',
-    //         maxRecords: 5
-    //     }).all()
-    //     await updateAirtableTikTok('Instagram', instagramData)
-    // } catch (e) {
-    //     console.log(e)
-    // }
-    // try {
-    //     const instagramData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "YouTube"'
-    //     }).all()
-    //     await updateAirtableTikTok('YouTube', instagramData)
-    // } catch (e) {
-    //     console.log(e)
-    // }
     try {
-        const twitterData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "Twitter"'
+        const instagramData = await base('Social_Profiles').select({
+            filterByFormula: '{Platform} = "Instagram"',
+            maxRecords: 1
         }).all()
-        await updateAirtableTikTok('Twitter', twitterData)
+        await updateAirtableTikTok('Instagram', instagramData)
     } catch (e) {
         console.log(e)
     }
+    // try {
+    //     const youtubeData = await base('Social_Profiles').select({
+    //         filterByFormula: '{Platform} = "YouTube"'
+    //     }).all()
+    //     await updateAirtableTikTok('YouTube', youtubeData)
+    // } catch (e) {
+    //     console.log(e)
+    // }
+    // try {
+    //     const twitterData = await base('Social_Profiles').select({
+    //         filterByFormula: '{Platform} = "Twitter"'
+    //     }).all()
+    //     await updateAirtableTikTok('Twitter', twitterData)
+    // } catch (e) {
+    //     console.log(e)
+    // }
 })();
 
 async function scrape(platform, record) {
@@ -68,28 +68,60 @@ async function scrape(platform, record) {
         let followers, pic
         const url = record.Profile.includes('www') ? record.Profile : `https://www.${record.Profile}`
         await driver.get(url)
-        if (platform === 'TikTok') {
-            followers = await driver.findElement(By.css('strong[title= "Followers"]'))
-            pic = await driver.findElement(By.xpath('//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img'))
-        } else if (platform === 'Instagram') {
-            let tmpFollowers = await driver.findElement(By.xpath("//div[text()= ' followers']"))
-            let tmpPfp = await driver.findElement(By.css("span[role='link']"))
-            followers = await tmpFollowers.findElement(By.tagName('span'))
-            pic = await tmpPfp.findElement(By.tagName(`img`))
-        } else if (platform === 'YouTube') {
-            let tmpPfp = await driver.findElement(By.id('channel-header-container'))
-            followers = await driver.findElement(By.id('subscriber-count'))
-            pic = await tmpPfp.findElement(By.tagName('img'))
-        } else if (platform === 'Twitter') {
-            try {
-                await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div[2]/div/div[3]')).click()
-            } catch (e) {
+        switch (platform) {
+            case 'TikTok':
+                followers = await driver.findElement(By.css('strong[title= "Followers"]'))
+                pic = await driver.findElement(By.xpath('//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img'))
+                break
+            case 'Instagram':
+                let tmpFollowersInstagram = await driver.findElement(By.xpath("//div[text()= ' followers']"))
+                let tmpPfpInstagram = await driver.findElement(By.css("span[role='link']"))
+                followers = await tmpFollowersInstagram.findElement(By.tagName('span'))
+                pic = await tmpPfpInstagram.findElement(By.tagName(`img`))
+                driver.takeScreenshot().then(
+                    function (image) {
+                        require('fs').writeFileSync('img.png', image, 'base64')
+                    }
+                )
+                break
+            case 'YouTube':
+                let tmpPfpYoutube = await driver.findElement(By.id('channel-header-container'))
+                followers = await driver.findElement(By.id('subscriber-count'))
+                pic = await tmpPfpYoutube.findElement(By.tagName('img'))
+                break
+            case 'Twitter':
+                try {
+                    await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div[2]/div/div[3]')).click()
+                } catch (e) {
 
-            }
-            followers = await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[5]/div[2]/a/span[1]/span'))
-            await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div[2]/div/a/div[4]/div')).click()
-            pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
+                }
+                followers = await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[5]/div[2]/a/span[1]/span'))
+                await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div[2]/div/a/div[4]/div')).click()
+                pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
+                break
         }
+        // if (platform === 'TikTok') {
+        //     followers = await driver.findElement(By.css('strong[title= "Followers"]'))
+        //     pic = await driver.findElement(By.xpath('//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img'))
+        // } else if (platform === 'Instagram') {
+        //     let tmpFollowers = await driver.findElement(By.xpath("//div[text()= ' followers']"))
+        //     let tmpPfp = await driver.findElement(By.css("span[role='link']"))
+        //     followers = await tmpFollowers.findElement(By.tagName('span'))
+        //     pic = await tmpPfp.findElement(By.tagName(`img`))
+        // } else if (platform === 'YouTube') {
+        //     let tmpPfp = await driver.findElement(By.id('channel-header-container'))
+        //     followers = await driver.findElement(By.id('subscriber-count'))
+        //     pic = await tmpPfp.findElement(By.tagName('img'))
+        // } else if (platform === 'Twitter') {
+        //     try {
+        //         await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div[2]/div/div[3]')).click()
+        //     } catch (e) {
+        //
+        //     }
+        //     followers = await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[5]/div[2]/a/span[1]/span'))
+        //     await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div[2]/div/a/div[4]/div')).click()
+        //     pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
+        // }
         results['Followers'] = await followers.getText()
         results['Followers'] = results['Followers'].replace("subscribers", '')
         results['Social_Media_Profile_Picture'] = await pic.getAttribute('src')
