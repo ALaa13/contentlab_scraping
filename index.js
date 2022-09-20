@@ -89,7 +89,7 @@ async function updateAirtableTikTok(platform, data) {
     const records = data.map(record => ({id: record.id, fields: record.fields}))
     console.log(`Total number of rows are being scraped: ${records.length}`)
     const error = []
-    let index = 0
+    let index = 1
     for (let record of records) {
         const updatedRecord = {}
         const scrapedData = await scrape(platform, record.fields)
