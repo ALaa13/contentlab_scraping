@@ -35,7 +35,7 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
     try {
         const instagramData = await base('Social_Profiles').select({
             filterByFormula: '{Platform} = "Instagram"',
-            maxRecords: 10
+            maxRecords: 5
         }).all()
         await updateAirtableTikTok('Instagram', instagramData)
     } catch (e) {
@@ -64,9 +64,8 @@ async function scrape(platform, record) {
             followers = await driver.findElement(By.css('strong[title= "Followers"]'))
             pic = await driver.findElement(By.xpath('//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img'))
         } else if (platform === 'Instagram') {
-            let tmpFollowers = await driver.findElement(By.xpath("//div[text()= ' followers']"))
-            followers = await tmpFollowers.findElement(By.tagName('span'))
-            pic = await tmpPfp.findElement(By.xpath('/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/div/div/span/img'))
+            followers = await driver.wait(until.elementIsVisible(await driver.findElement(By.xpath("//div[text()= ' followers']"))), 5000);
+            pic = await driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/div/div/span/img'))
         } else if (platform === 'YouTube') {
             let tmpPfp = await driver.findElement(By.id('channel-header-container'))
             followers = await driver.findElement(By.id('subscriber-count'))
