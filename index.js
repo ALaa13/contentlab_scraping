@@ -32,22 +32,23 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
     // } catch (e) {
     //     console.log(e.name)
     // }
-    // try {
-    //     const instagramData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "Instagram"'
-    //     }).all()
-    //     await updateAirtableTikTok('Instagram', instagramData)
-    // } catch (e) {
-    //     console.log(e)
-    // }
     try {
         const instagramData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "YouTube"'
+            filterByFormula: '{Platform} = "Instagram"',
+            maxRecord: 10
         }).all()
-        await updateAirtableTikTok('YouTube', instagramData)
+        await updateAirtableTikTok('Instagram', instagramData)
     } catch (e) {
         console.log(e)
     }
+    // try {
+    //     const instagramData = await base('Social_Profiles').select({
+    //         filterByFormula: '{Platform} = "YouTube"'
+    //     }).all()
+    //     await updateAirtableTikTok('YouTube', instagramData)
+    // } catch (e) {
+    //     console.log(e)
+    // }
 })();
 
 async function scrape(platform, record) {
