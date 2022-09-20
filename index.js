@@ -64,7 +64,7 @@ async function scrape(platform, record) {
             followers = await driver.findElement(By.css('strong[title= "Followers"]'))
             pic = await driver.findElement(By.xpath('//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img'))
         } else if (platform === 'Instagram') {
-            followers = await driver.wait(until.elementIsVisible(await driver.findElement(By.xpath("//div[text()= ' followers']"))), 5000);
+            followers = await driver.wait(until.elementIsVisible(await driver.findElement(By.xpath("/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[2]/a/div/span"))), 5000);
             pic = await driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/div/div/span/img'))
         } else if (platform === 'YouTube') {
             let tmpPfp = await driver.findElement(By.id('channel-header-container'))
