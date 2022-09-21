@@ -24,27 +24,30 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
 
 // Main function
 (async () => {
-    // try {
-    //     const tikTokData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "TikTok"'
-    //     }).all()
-    //     await updateAirtableTikTok('TikTok', tikTokData)
-    // } catch (e) {
-    //     console.log(e.name)
-    // }
-    // try {
-    //     const youtubeData = await base('Social_Profiles').select({
-    //         filterByFormula: '{Platform} = "YouTube"'
-    //     }).all()
-    //     await updateAirtableTikTok('YouTube', youtubeData)
-    // } catch (e) {
-    //     console.log(e)
-    // }
+    try {
+        const tikTokData = await base('Social_Profiles').select({
+            filterByFormula: '{Platform} = "TikTok"',
+            maxRecords: 10
+        }).all()
+        await updateAirtable('TikTok', tikTokData)
+    } catch (e) {
+        console.log(e.name)
+    }
+    try {
+        const youtubeData = await base('Social_Profiles').select({
+            filterByFormula: '{Platform} = "YouTube"',
+            maxRecords: 10
+        }).all()
+        await updateAirtable('YouTube', youtubeData)
+    } catch (e) {
+        console.log(e)
+    }
     try {
         const twitterData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "Twitter"'
+            filterByFormula: '{Platform} = "Twitter"',
+            maxRecords: 10
         }).all()
-        await updateAirtableTikTok('Twitter', twitterData)
+        await updateAirtable('Twitter', twitterData)
     } catch (e) {
         console.log(e)
     }
@@ -98,7 +101,7 @@ async function scrape(platform, record) {
     }
 }
 
-async function updateAirtableTikTok(platform, data) {
+async function updateAirtable(platform, data) {
     const start = Date.now()
     const records = data.map(record => ({id: record.id, fields: record.fields}))
     console.log(`Total number of rows are being scraped: ${records.length}`)
@@ -131,12 +134,12 @@ async function updateAirtableTikTok(platform, data) {
         })
     }
     console.log('-----------------------------------------')
-    const updatedRows = await airtableUpdate('Social_Profiles', updatedRecords)
+    const updatedRows = await updateRecords('Social_Profiles', updatedRecords)
     console.log(`Total number of updated rows on airtable: ${updatedRows}`)
     console.log(`Execution time: ${(Date.now() - start) / 1000}S`);
 }
 
-async function airtableUpdate(tableName, data) {
+async function updateRecords(tableName, data) {
     let startIndex = 0
     let i = data.length >= 10 ? 10 : 0
     let counter = 0
