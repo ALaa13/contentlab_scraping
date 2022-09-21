@@ -24,22 +24,22 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
 
 // Main function
 (async () => {
-    try {
-        const tikTokData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "TikTok"'
-        }).all()
-        await updateAirtableTikTok('TikTok', tikTokData)
-    } catch (e) {
-        console.log(e.name)
-    }
-    try {
-        const youtubeData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "YouTube"'
-        }).all()
-        await updateAirtableTikTok('YouTube', youtubeData)
-    } catch (e) {
-        console.log(e)
-    }
+    // try {
+    //     const tikTokData = await base('Social_Profiles').select({
+    //         filterByFormula: '{Platform} = "TikTok"'
+    //     }).all()
+    //     await updateAirtableTikTok('TikTok', tikTokData)
+    // } catch (e) {
+    //     console.log(e.name)
+    // }
+    // try {
+    //     const youtubeData = await base('Social_Profiles').select({
+    //         filterByFormula: '{Platform} = "YouTube"'
+    //     }).all()
+    //     await updateAirtableTikTok('YouTube', youtubeData)
+    // } catch (e) {
+    //     console.log(e)
+    // }
     try {
         const twitterData = await base('Social_Profiles').select({
             filterByFormula: '{Platform} = "Twitter"'
@@ -85,6 +85,7 @@ async function scrape(platform, record) {
         results['Social_Media_Profile_Picture'] = await pic.getAttribute('src')
         return results
     } catch (e) {
+        console.log(e)
         results['error'] = 'error'
         return results
     } finally {
