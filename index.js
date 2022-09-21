@@ -75,8 +75,8 @@ async function scrape(platform, record) {
                 } catch (e) {
 
                 }
-                followers = await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[5]/div[2]/a/span[1]/span'))
-                await driver.findElement(By.xpath('//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/div/div[2]/div/a/div[4]')).click()
+                followers = await (await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name}/followers')]`))).findElement(By.tagName('span'))
+                await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name}/photo')]`)).click()
                 pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
                 break
         }
