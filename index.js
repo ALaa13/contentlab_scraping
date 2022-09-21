@@ -75,10 +75,15 @@ async function scrape(platform, record) {
                 } catch (e) {
 
                 }
-                followers = await (await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name}/followers')]`))).findElement(By.tagName('span'))
-                await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name}/photo')]`)).click()
-                pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
-                break
+                try {
+                    followers = await (await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name.charAt(0).toLowerCase() + record.Name.slice(1)}/followers')]`))).findElement(By.tagName('span'))
+                    await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name.charAt(0).toLowerCase() + record.Name.slice(1)}/photo')]`)).click()
+                    pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
+                } catch (e) {
+                    followers = await (await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name}/followers')]`))).findElement(By.tagName('span'))
+                    await driver.findElement(By.xpath(`//a[contains(@href,'/${record.Name}/photo')]`)).click()
+                    pic = await driver.findElement(By.xpath('//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img'))
+                }
         }
         results['Followers'] = await followers.getText()
         results['Followers'] = results['Followers'].replace("subscribers", '')
