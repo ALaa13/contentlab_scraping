@@ -172,11 +172,11 @@
 // }
 const express = require('express')
 const app = express()
-const PORT = 3000
+const port = 3000
 
 app.get('/', (request, response) => {
-    response.json({Name: 'Alaa'})
+    response.send({Name: 'Alaa'})
 })
 
 
-app.listen(process.env.PORT || PORT, () => console.log(`Running on port ${PORT}`))
+app.listen(process.env.PORT || port, () => console.log(`Running on port ${port}`))
