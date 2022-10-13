@@ -63,8 +63,8 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
 async function scrapeAverageViewsTikTok(url) {
     let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH)
     const driver = new Builder().forBrowser('chrome').setChromeOptions(options).setChromeService(serviceBuilder).build()
-    await driver.manage().setTimeouts({implicit: 1000});
-    console.time()
+    await driver.manage().setTimeouts({implicit: 4000});
+    console.time("Execution Time: ")
     const data = []
     try {
         const videoLinks = []
@@ -117,8 +117,7 @@ async function scrapeAverageViewsTikTok(url) {
     } finally {
         // Quite the driver and calculate the execution time.
         await driver.quit()
-        console.timeEnd()
-
+        console.timeEnd("Execution Time: ")
     }
     return data
 }
@@ -131,10 +130,9 @@ async function computeAverageViews(data) {
     }
 
     const views = statistic(data.map(item => processNumbers(item.views)))
-    const likes = data.map(item => processNumbers(item.likes))
-    const comments = data.map(item => processNumbers(item.comments))
-    const shares = data.map(item => processNumbers(item.shares))
-    console.table({views: views, likes: likes, comments: comments, shares: shares})
+    const likes = statistic(data.map(item => processNumbers(item.likes)))
+    const comments = statistic(data.map(item => processNumbers(item.comments)))
+    const shares = statistic(data.map(item => processNumbers(item.shares)))
 
     // const views = statistic([1200000,
     //     1400000,
@@ -159,10 +157,17 @@ async function computeAverageViews(data) {
     const thirdQuartile = views.quartile(0.75)
     const iqr = thirdQuartile - firstQuartile
     const outliers = thirdQuartile + 1.5 * iqr
+
+    const engagementData = likes.sum() + comments.sum() + shares.sum()
+
     console.log(`Median = ${median}`)
-    console.log(`1 Quartile = ${firstQuartile}  2 Quartile ${thirdQuartile}`)
+    console.log(`1 Quartile = ${firstQuartile}`)
+    console.log(`3 Quartile = ${thirdQuartile}`)
     console.log(`IQR = ${iqr}`)
     console.log(`Outliers = ${outliers}`)
+    console.log(`Engagement Data = ${engagementData}`)
+    console.log(`Views sum = ${views.sum()}`)
+    console.log(`Engagement Rate = ${engagementData / views.sum()}`)
 
 }
 
