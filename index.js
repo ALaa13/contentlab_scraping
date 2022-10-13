@@ -56,7 +56,7 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
 (async () => {
     const data = await scrapeAverageViewsTikTok('https://www.tiktok.com/@fredziownik_art')
     console.table(data)
-    // await computeAverageViews()
+    await computeAverageViews()
 })();
 
 async function scrapeAverageViewsTikTok(url) {
@@ -120,6 +120,48 @@ async function scrapeAverageViewsTikTok(url) {
 
     }
     return data
+}
+
+async function computeAverageViews(data) {
+    const processNumbers = item => {
+        let number = parseFloat(item.replace(/^\D+/g, ''))
+        item.includes('M') ? number *= 1000000 : item.includes('K') ? number *= 1000 : number
+        return number
+    }
+
+    const views = data.map(item => processNumbers(item.views))
+    const likes = data.map(item => processNumbers(item.likes))
+    const comments = data.map(item => processNumbers(item.comments))
+    const shares = data.map(item => processNumbers(item.shares))
+    console.table({views: views, likes: likes, comments: comments, shares: shares})
+
+    // const views = statistic([1200000,
+    //     1400000,
+    //     17700000,
+    //     558200,
+    //     4300000,
+    //     2000000,
+    //     1400000,
+    //     19900000,
+    //     1200000,
+    //     3500000,
+    //     16000000,
+    //     1100000,
+    //     983300,
+    //     3000000,
+    //     17600000,
+    //     3900000])
+
+    const median = views.median()
+    const firstQuartile = views.quartile(0.25)
+    const thirdQuartile = views.quartile(0.75)
+    const iqr = thirdQuartile - firstQuartile
+    const outliers = thirdQuartile + 1.5 * iqr
+    console.log(`Median = ${median}`)
+    console.log(`1 Quartile = ${firstQuartile}  2 Quartile ${thirdQuartile}`)
+    console.log(`IQR = ${iqr}`)
+    console.log(`Outliers = ${outliers}`)
+
 }
 
 async function scrape(platform, record) {
