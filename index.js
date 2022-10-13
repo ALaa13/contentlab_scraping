@@ -1,6 +1,7 @@
 const {Builder, By} = require('selenium-webdriver')
 const chrome = require("selenium-webdriver/chrome")
 const Airtable = require('airtable')
+const statistic = require('summary')
 
 // Initialize Selenium
 const screen = {
@@ -129,7 +130,7 @@ async function computeAverageViews(data) {
         return number
     }
 
-    const views = data.map(item => processNumbers(item.views))
+    const views = statistic(data.map(item => processNumbers(item.views)))
     const likes = data.map(item => processNumbers(item.likes))
     const comments = data.map(item => processNumbers(item.comments))
     const shares = data.map(item => processNumbers(item.shares))
@@ -151,6 +152,7 @@ async function computeAverageViews(data) {
     //     3000000,
     //     17600000,
     //     3900000])
+
 
     const median = views.median()
     const firstQuartile = views.quartile(0.25)
