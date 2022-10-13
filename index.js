@@ -169,14 +169,7 @@ function getOutliers(data) {
     const firstQuartile = views.quartile(0.25)
     const thirdQuartile = views.quartile(0.75)
     const iqr = thirdQuartile - firstQuartile
-    const outliers = thirdQuartile + iqr
-
-    console.log(`1 Quartile = ${firstQuartile}`)
-    console.log(`3 Quartile = ${thirdQuartile}`)
-    console.log(`IQR = ${iqr}`)
-    console.log(`Outliers = ${outliers}`)
-
-    return outliers
+    return thirdQuartile + iqr
 }
 
 function computeAverageViews(data) {
