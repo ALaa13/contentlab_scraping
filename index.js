@@ -23,35 +23,104 @@ Airtable.configure({
 const base = Airtable.base("app0uHEtrxyWp3uzn");
 
 // Main function
+// (async () => {
+//     try {
+//         const tikTokData = await base('Social_Profiles').select({
+//             filterByFormula: '{Platform} = "TikTok"',
+//             maxRecords: 10
+//         }).all()
+//         await updateAirtable('TikTok', tikTokData)
+//     } catch (e) {
+//         console.log(e.name)
+//     }
+//     try {
+//         const youtubeData = await base('Social_Profiles').select({
+//             filterByFormula: '{Platform} = "YouTube"',
+//             maxRecords: 10
+//         }).all()
+//         await updateAirtable('YouTube', youtubeData)
+//     } catch (e) {
+//         console.log(e)
+//     }
+//     try {
+//         const twitterData = await base('Social_Profiles').select({
+//             filterByFormula: '{Platform} = "Twitter"',
+//             maxRecords: 10
+//         }).all()
+//         await updateAirtable('Twitter', twitterData)
+//     } catch (e) {
+//         console.log(e)
+//     }
+// })();
+
 (async () => {
-    try {
-        const tikTokData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "TikTok"',
-            maxRecords: 10
-        }).all()
-        await updateAirtable('TikTok', tikTokData)
-    } catch (e) {
-        console.log(e.name)
-    }
-    try {
-        const youtubeData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "YouTube"',
-            maxRecords: 10
-        }).all()
-        await updateAirtable('YouTube', youtubeData)
-    } catch (e) {
-        console.log(e)
-    }
-    try {
-        const twitterData = await base('Social_Profiles').select({
-            filterByFormula: '{Platform} = "Twitter"',
-            maxRecords: 10
-        }).all()
-        await updateAirtable('Twitter', twitterData)
-    } catch (e) {
-        console.log(e)
-    }
+    const data = await scrapeAverageViewsTikTok('https://www.tiktok.com/@fredziownik_art')
+    console.table(data)
+    // await computeAverageViews()
 })();
+
+async function scrapeAverageViewsTikTok(url) {
+    let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH)
+    const driver = new Builder().forBrowser('chrome').setChromeOptions(options).setChromeService(serviceBuilder).build()
+    await driver.manage().setTimeouts({implicit: 1000});
+    console.time()
+    const data = []
+    try {
+        const videoLinks = []
+        // Get the creator main page
+        await driver.get(url)
+        // scrape the videos gird of the main page
+        const videosGrid = await driver.findElement(By.css("div[mode='compact']"))
+        const videos = await videosGrid.findElements(By.xpath('div'))
+        // loop over the scraped videos and scrape the Views count and the video link, save them into an array of objects.
+        if (videos.length > 0) {
+            for (let video of videos) {
+                const href = (await (await video.findElement(By.xpath(`div[1]/div/div/a`))).getAttribute('href'))
+                const videoViews = (await (await video.findElement(By.css(`strong[data-e2e='video-views']`))).getAttribute('innerText'))
+                videoLinks.push({
+                    link: href,
+                    views: videoViews
+                })
+            }
+            // Loop through array of videos, open each video link, scrape the needed data
+            for (let [counter, video] of videoLinks.entries()) {
+                await driver.get(video.link)
+                const likesCount = (await (await driver.findElement(By.css("strong[data-e2e='like-count']"))).getAttribute('innerText'))
+                const commentCounts = (await (await driver.findElement(By.css("strong[data-e2e='comment-count']"))).getAttribute('innerText'))
+                const shareCounts = (await (await driver.findElement(By.css("strong[data-e2e='share-count']"))).getAttribute('innerText'))
+                const videoDate = (await (await (await driver.findElement(By.css("span[data-e2e='browser-nickname']"))).findElement(By.xpath('span[2]'))).getAttribute('innerText'))
+                const videoCaption = (await (await driver.findElement(By.css("div[data-e2e='browse-video-desc']"))).getAttribute('innerText'))
+                let isPaid
+                // Check if the video is Paid Partnership by locating the element.
+                try {
+                    isPaid = (await (await driver.findElement(By.xpath("//p[text()='Paid partnership']"))).getAttribute('innerText'))
+                } catch (e) {
+                    // Look for the keyword ad when the paid partnership is not found
+                    videoCaption.includes('#ad') ? isPaid = 'ad' : isPaid = 'not promo'
+                }
+                data.push({
+                    views: video.views,
+                    likes: likesCount,
+                    comments: commentCounts,
+                    shares: shareCounts,
+                    date: videoDate,
+                    //caption: videoCaption,
+                    paid: isPaid
+                })
+                if (counter === 15)
+                    break
+            }
+        }
+    } catch (e) {
+        console.log(e.message)
+    } finally {
+        // Quite the driver and calculate the execution time.
+        await driver.quit()
+        console.timeEnd()
+
+    }
+    return data
+}
 
 async function scrape(platform, record) {
     let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH)
