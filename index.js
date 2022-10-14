@@ -85,7 +85,7 @@ const checkDate = date => {
     const now = new Date();
     const msBetweenDates = Math.abs(then.getTime() - now.getTime());
     const msToDays = Math.trunc(msBetweenDates / (24 * 60 * 60 * 1000))
-    return msToDays > 3 && msToDays < 40
+    return msToDays > 3 && msToDays < 90
 }
 
 async function scrapeAverageViewsTikTok(url) {
