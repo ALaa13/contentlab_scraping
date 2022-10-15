@@ -57,9 +57,15 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
 (async () => {
     const data = await scrapeAverageViewsTikTok('https://www.tiktok.com/@fredziownik_art')
     console.table(data)
-    console.log(`Average Views = ${new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))}`)
-    console.log(`Engagement Rate = ${new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))}`)
+    const averageViews = new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))
+    const engagementRate = new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))
+    console.log(`Average Views = ${averageViews}`)
+    console.log(`Engagement Rate = ${engagementRate}`)
 })();
+
+/*
+    Helper Methods
+*/
 
 const processNumbers = item => {
     let number = parseFloat(item.replace(/^\D+/g, ''))
@@ -86,6 +92,26 @@ const checkDate = date => {
     const msBetweenDates = Math.abs(then.getTime() - now.getTime());
     const msToDays = Math.trunc(msBetweenDates / (24 * 60 * 60 * 1000))
     return msToDays > 3 && msToDays < 90
+}
+const getOutliers = data => {
+    const views = statistic(data.map(item => processNumbers(item.views)))
+
+    const firstQuartile = views.quartile(0.25)
+    const thirdQuartile = views.quartile(0.75)
+    const iqr = thirdQuartile - firstQuartile
+    return thirdQuartile + iqr
+}
+const computeAverageViews = data => {
+    const views = statistic(data.map(item => processNumbers(item.views)))
+    return views.sum() / views.data().length
+}
+const computeEngagementRate = data => {
+    const views = statistic(data.map(item => processNumbers(item.views)))
+    const likes = statistic(data.map(item => processNumbers(item.likes)))
+    const comments = statistic(data.map(item => processNumbers(item.comments)))
+    const shares = statistic(data.map(item => processNumbers(item.shares)))
+    const engagementData = likes.sum() + comments.sum() + shares.sum()
+    return engagementData / views.sum()
 }
 
 async function scrapeAverageViewsTikTok(url) {
@@ -163,30 +189,9 @@ async function scrapeAverageViewsTikTok(url) {
     return data
 }
 
-function getOutliers(data) {
-    const views = statistic(data.map(item => processNumbers(item.views)))
-
-    const firstQuartile = views.quartile(0.25)
-    const thirdQuartile = views.quartile(0.75)
-    const iqr = thirdQuartile - firstQuartile
-    return thirdQuartile + iqr
-}
-
-function computeAverageViews(data) {
-    const views = statistic(data.map(item => processNumbers(item.views)))
-    return views.sum() / views.data().length
-}
-
-function computeEngagementRate(data) {
-    const views = statistic(data.map(item => processNumbers(item.views)))
-    const likes = statistic(data.map(item => processNumbers(item.likes)))
-    const comments = statistic(data.map(item => processNumbers(item.comments)))
-    const shares = statistic(data.map(item => processNumbers(item.shares)))
-    const engagementData = likes.sum() + comments.sum() + shares.sum()
-    return engagementData / views.sum()
-}
-
-
+/*
+    Followers Scraping
+*/
 async function scrape(platform, record) {
     let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH)
     const driver = new Builder().forBrowser('chrome').setChromeOptions(options).setChromeService(serviceBuilder).build()
