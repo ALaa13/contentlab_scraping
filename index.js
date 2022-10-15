@@ -55,7 +55,7 @@ const base = Airtable.base("app0uHEtrxyWp3uzn");
 // })();
 
 (async () => {
-    const data = await scrapeAverageViewsTikTok('https://www.tiktok.com/@fredziownik_art')
+    const data = await scrapeAverageViewsTikTok(process.env.URL)
     console.table(data)
     const averageViews = new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))
     const engagementRate = new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))
