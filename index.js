@@ -117,7 +117,7 @@ const computeEngagementRate = data => {
 async function scrapeAverageViewsTikTok(url) {
     let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH)
     const driver = new Builder().forBrowser('chrome').setChromeOptions(options).setChromeService(serviceBuilder).build()
-    await driver.manage().setTimeouts({implicit: 1000})
+    //await driver.manage().setTimeouts({implicit: 1000})
     console.time("Execution Time: ")
     const data = []
     try {
