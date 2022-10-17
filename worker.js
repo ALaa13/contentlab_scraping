@@ -30,14 +30,18 @@ function start() {
         // This is an example job that just slowly reports on progress
         // while doing no work. Replace this with your own job logic.
         console.log("Running worker.js start function")
-
-        const data = await scrapeAverageViewsTikTok("https://www.tiktok.com/@fredziownik_art")
+        let progress = 0
+        let data = {}
+        while (progress < 100) {
+            data = await scrapeAverageViewsTikTok("https://www.tiktok.com/@fredziownik_art")
+            progress += 1;
+            await job.progress(progress)
+        }
         console.table(data)
         const averageViews = new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))
         const engagementRate = new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))
         console.log(`Average Views = ${averageViews}`)
         console.log(`Engagement Rate = ${engagementRate}`)
-
 
         // A job can return values that will be stored in Redis as JSON
         // This return value is unused in this demo application.

@@ -16,10 +16,23 @@ app.get('/', async (req, res) => {
 app.get('/69', async (req, res) => {
     try {
         const job = await workQueue.add()
-        console.log(job)
         res.json({id: job.id})
     } catch (e) {
         res.json({Name: "Worker not set up correctly"})
+    }
+})
+
+app.get('/job/:id', async (req, res) => {
+    let id = req.params.id
+    let job = await workQueue.getJob(id)
+
+    if (job === null) {
+        res.status(404).end()
+    } else {
+        let state = await job.getState()
+        let progress = job._progress
+        let reason = job.failedReason
+        res.json({id, state, progress, reason})
     }
 })
 
