@@ -9,6 +9,11 @@ const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const workQueue = new queue('work', REDIS_URL)
 
 app.get('/', async (req, res) => {
+    res.json({title: "Working fine"})
+})
+
+
+app.get('/69', async (req, res) => {
     const job = await workQueue.add()
     console.log(job)
     res.json({id: job.id})
