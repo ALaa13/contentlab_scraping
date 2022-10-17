@@ -25,6 +25,7 @@ options.addArguments("--disable-dev-shm-usage")
 options.windowSize(screen)
 
 function start() {
+    console.log("Running worker.js start function")
     // Connect to the named work queue
     workQueue.process(maxJobsPerWorker, async (job) => {
         // This is an example job that just slowly reports on progress
