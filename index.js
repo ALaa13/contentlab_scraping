@@ -14,9 +14,14 @@ app.get('/', async (req, res) => {
 
 
 app.get('/69', async (req, res) => {
-    const job = await workQueue.add()
-    console.log(job)
-    res.json({id: job.id})
+    try {
+        const job = await workQueue.add()
+        console.log(job)
+        res.json({id: job.id})
+    } catch (e) {
+        res.json({Name: "Worker not set up correctly"})
+    }
+
 })
 
 workQueue.on('global:completed', (jobId, result) => {
