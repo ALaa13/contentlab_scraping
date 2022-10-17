@@ -9,10 +9,10 @@ const PORT = 3000
 
 
 // Initialize Queue
-const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-const workQueue = new queue('work', REDIS_URL)
-const workers = process.env.WEB_CONCURRENCY || 2;
-const maxJobsPerWorker = 50;
+// const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+// const workQueue = new queue('work', REDIS_URL)
+// const workers = process.env.WEB_CONCURRENCY || 2;
+// const maxJobsPerWorker = 50;
 
 
 // Initialize Selenium
@@ -30,48 +30,40 @@ options.windowSize(screen);
 
 
 app.get('/', async (req, res) => {
-    const job = await workQueue.add({url: process.env.URL})
-    res.json({id: job.id})
-});
+    res.json({Name: "Alaa"})
+    // const job = await workQueue.add({url: process.env.URL})
+    // res.json({id: job.id})
+})
 
 
-workQueue.on('global:completed', (jobId, result) => {
-    console.log(`Job completed with result ${result}`)
-});
-
-function start() {
-    // Connect to the named work queue
-    workQueue.process(maxJobsPerWorker, async (job) => {
-        // This is an example job that just slowly reports on progress
-        // while doing no work. Replace this with your own job logic.
-
-        const data = await scrapeAverageViewsTikTok(process.env.URL)
-        console.table(data)
-        const averageViews = new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))
-        const engagementRate = new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))
-        console.log(`Average Views = ${averageViews}`)
-        console.log(`Engagement Rate = ${engagementRate}`)
-
-
-        // A job can return values that will be stored in Redis as JSON
-        // This return value is unused in this demo application.
-        return {averageViews: averageViews, engagementRate: engagementRate}
-    });
-}
-
-
-throng({workers, start});
+// workQueue.on('global:completed', (jobId, result) => {
+//     console.log(`Job completed with result ${result}`)
+// })
+//
+// function start() {
+//     // Connect to the named work queue
+//     workQueue.process(maxJobsPerWorker, async (job) => {
+//         // This is an example job that just slowly reports on progress
+//         // while doing no work. Replace this with your own job logic.
+//
+//         const data = await scrapeAverageViewsTikTok(process.env.URL)
+//         console.table(data)
+//         const averageViews = new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))
+//         const engagementRate = new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))
+//         console.log(`Average Views = ${averageViews}`)
+//         console.log(`Engagement Rate = ${engagementRate}`)
+//
+//
+//         // A job can return values that will be stored in Redis as JSON
+//         // This return value is unused in this demo application.
+//         return {averageViews: averageViews, engagementRate: engagementRate}
+//     })
+// }
+//
+//
+// throng({workers, start})
 app.listen(process.env.PORT || PORT, () => console.log("Server started!"))
 
-
-// (async () => {
-//     const data = await scrapeAverageViewsTikTok(process.env.URL)
-//     console.table(data)
-//     const averageViews = new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))
-//     const engagementRate = new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))
-//     console.log(`Average Views = ${averageViews}`)
-//     console.log(`Engagement Rate = ${engagementRate}`)
-// })();
 
 /*
     Helper Methods
