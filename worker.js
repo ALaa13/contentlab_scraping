@@ -25,11 +25,11 @@ options.addArguments("--disable-dev-shm-usage")
 options.windowSize(screen)
 
 function start() {
-    console.log("Running worker.js start function")
     // Connect to the named work queue
     workQueue.process(maxJobsPerWorker, async (job) => {
         // This is an example job that just slowly reports on progress
         // while doing no work. Replace this with your own job logic.
+        console.log("Running worker.js start function")
 
         const data = await scrapeAverageViewsTikTok("https://www.tiktok.com/@fredziownik_art")
         console.table(data)
