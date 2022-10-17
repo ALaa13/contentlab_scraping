@@ -21,7 +21,6 @@ app.get('/69', async (req, res) => {
     } catch (e) {
         res.json({Name: "Worker not set up correctly"})
     }
-
 })
 
 workQueue.on('global:completed', (jobId, result) => {

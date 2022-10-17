@@ -1,12 +1,12 @@
 const {Builder, By} = require('selenium-webdriver')
 const chrome = require("selenium-webdriver/chrome")
 const statistic = require('summary')
-const queue = require('bull')
+const Queue = require('bull')
 const throng = require('throng')
 
 // Initialize Queue
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
-const workQueue = new queue('work', REDIS_URL)
+const workQueue = new Queue('work', REDIS_URL)
 const workers = process.env.WEB_CONCURRENCY || 2
 const maxJobsPerWorker = 50
 
@@ -169,4 +169,4 @@ async function scrapeAverageViewsTikTok(url) {
 }
 
 
-throng({workers, start})
+throng({workers: workers}, start)
