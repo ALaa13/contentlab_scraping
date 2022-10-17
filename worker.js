@@ -30,7 +30,7 @@ function start() {
         // This is an example job that just slowly reports on progress
         // while doing no work. Replace this with your own job logic.
 
-        const data = await scrapeAverageViewsTikTok(process.env.URL)
+        const data = await scrapeAverageViewsTikTok("https://www.tiktok.com/@fredziownik_art")
         console.table(data)
         const averageViews = new Intl.NumberFormat().format(Math.trunc(computeAverageViews(data)))
         const engagementRate = new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(computeEngagementRate(data))
