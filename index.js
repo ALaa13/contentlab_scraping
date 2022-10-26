@@ -1,29 +1,23 @@
-const express = require('express')
-const app = express()
-const queue = require('bull')
-const PORT = 3000
+const updateAirtable = require('./tiktokScraping')
+const Airtable = require('airtable')
+const cron = require('cron')
 
-
-// Initialize Queue
-const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-const workQueue = new queue('work', REDIS_URL)
-
-app.get('/', async (req, res) => {
-    res.json({title: "Working fine"})
+// Initialize Airtable
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey:  'keyKOpl3rm3Q1r0MZ' //process.env.AIRTABLE_API_KEY
 })
+const base = Airtable.base("app0uHEtrxyWp3uzn");
 
 
-app.get('/69', async (req, res) => {
+(async () => {
     try {
-        const job = await workQueue.add()
-        res.json({id: job.id})
+        const tikTokData = await base('Social_Profiles').select({
+            filterByFormula: '{Platform} = "TikTok"',
+            maxRecords: 11
+        }).all()
+        await updateAirtable('TikTok', tikTokData)
     } catch (e) {
-        res.json({Name: "Worker not set up correctly"})
+        console.log(e)
     }
-})
-
-workQueue.on('global:completed', (jobId, result) => {
-    console.log(`Job completed with result ${result}`)
-})
-
-app.listen(process.env.PORT || PORT, () => console.log("Server started!"))
+})()
